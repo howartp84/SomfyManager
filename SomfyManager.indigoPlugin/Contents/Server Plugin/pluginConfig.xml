@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<PluginConfig>
+	<Field id="showDebugInfo" type="checkbox">
+		<Label>Enable debugging:</Label>
+	</Field>
+	
+	<Field id="keepAlive" type="checkbox">
+		<Label>Keep MyLink alive:</Label>
+	</Field>
+</PluginConfig>
