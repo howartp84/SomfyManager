@@ -8,6 +8,8 @@ import indigo
 
 import telnetlib, socket
 
+import json
+
 import os
 import subprocess
 
@@ -124,9 +126,30 @@ class Plugin(indigo.PluginBase):
 
 		self.myLink.write(payload)
 		
-		reply = ""
+		myReply = self.myLink.read_very_eager() #returns JSON object
 		
-		reply = self.myLink.read_very_eager()
+		strIDPos = myReply.find("\"id\":") #end of first {} in case there's some keepalives
+		strEnd = myReply.find("}",strIDPos)+1
+		strDict = myReply[0:strEnd] 		#Get full {} that we need
+		
+		cmdResponse = json_loads(strDict)
+
+ 		#Response Object:
+		#{"jsonrpc":"2.0", "result":true, "id":123}
+		#{"jsonrpc":"2.0", "error": {"code": -32601, "message": "Method not found"}, "id": "1"}
+		
+		if ("result" in cmdResponse):
+			#Response must contain result if it succeeded
+			self.debugLog("Command succeeded with: %s" % cmdResponse["result"])
+		elif ("error" in cmdResponse):
+			#Response must contain error if it failed
+			cmdError = json_loads(cmdResponse["error"])
+			self.errorLog("Command failed with: %s (%s)" % (cmdError["message"],cmdError["code"]))
+		else:
+			#Should never happen by the JSON-RPC specification
+			self.errorLog("Mylink returned an invalid response that was neither success nor failure.")
+			self.errorLog(str(myReply))
+		
 		self.debugLog("Reply from %s: %s" % (message_id,str(reply)))
 
 		
