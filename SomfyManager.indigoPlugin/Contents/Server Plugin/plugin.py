@@ -132,7 +132,7 @@ class Plugin(indigo.PluginBase):
 		strEnd = myReply.find("}",strIDPos)+1
 		strDict = myReply[0:strEnd] 		#Get full {} that we need
 		
-		cmdResponse = json_loads(strDict)
+		cmdResponse = json.loads(strDict)
 
  		#Response Object:
 		#{"jsonrpc":"2.0", "result":true, "id":123}
